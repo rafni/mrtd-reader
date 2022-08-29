@@ -1,6 +1,6 @@
 <?php
 
-namespace Rafni\MrtdReader\Policy;
+namespace Rafni\MrtdReader\Utils;
 
 /**
  * ICAO 9303-1 Machine Readable Travel Documents

@@ -3,8 +3,8 @@
 namespace Rafni\MrtdReader\Documents;
 
 use Rafni\MrtdReader\Contracts\DocumentContract;
-use Rafni\MrtdReader\Policy\CommonUtilities;
-use Rafni\MrtdReader\Policy\Country;
+use Rafni\MrtdReader\Utils\CommonUtilities;
+use Rafni\MrtdReader\Utils\Country;
 use DateTime;
 use Exception;
 
@@ -16,7 +16,7 @@ use Exception;
  * https://www.icao.int/publications/Documents/9303_p5_cons_en.pdf
  * https://www.icao.int/publications/Documents/9303_p5_cons_es.pdf
  */
-class DocumentId extends CommonUtilities implements DocumentContract
+class IdCard extends CommonUtilities implements DocumentContract
 {
     /**
      * Patterns defined by the standard for each MRZ line of the TD1 document
@@ -132,7 +132,7 @@ class DocumentId extends CommonUtilities implements DocumentContract
      */
 	public function __construct(array $mrzLine)
     {
-        if (count($mrzLine) != 3) {
+        if (count($mrzLine) != count(self::PATTERNS)) {
             throw new Exception('MRZ codes do not comply with the ICAO 9303-1 standard for TD1 documents');
         }
         $this->mrzLines = array_values($mrzLine);
@@ -154,7 +154,7 @@ class DocumentId extends CommonUtilities implements DocumentContract
      * TD1 document integrity verificator digit verifier
      * @return object
      */
-    public function verify()
+    public function verify() : object
     {
         return (object) [
             'documentNumber' => $this->documentNumberVerificator(),
@@ -168,7 +168,7 @@ class DocumentId extends CommonUtilities implements DocumentContract
      * Get the processed information available from the TD1 document
      * @return object
      */
-    public function data()
+    public function data() : object
     {
         return (object) array_map(function($value) {
             if (is_string($value)) {
@@ -189,7 +189,7 @@ class DocumentId extends CommonUtilities implements DocumentContract
 
     /**
      * Obtain the code of the issuer of the document extracted from line 1 of the MRZ code of the TD1 document
-     * @return string
+     * @return object|string
      */
     public function issueCode()
     {
@@ -232,7 +232,7 @@ class DocumentId extends CommonUtilities implements DocumentContract
      * Obtain the birthday date extracted from line 2 of the MRZ code of the TD1 document
      * @return DateTime
      */
-    public function birthdayDate()
+    public function birthdayDate() : DateTime
     {
         return DateTime::createFromFormat('ymd', $this->birthdayDate);
     }
@@ -250,14 +250,14 @@ class DocumentId extends CommonUtilities implements DocumentContract
      * Obtain the expiration date of the document extracted from line 2 of the MRZ code of the TD1 document
      * @return DateTime
      */
-    public function expirationDate()
+    public function expirationDate() : DateTime
     {
         return DateTime::createFromFormat('ymd', $this->expirationDate);
     }
 
     /**
      * Obtain the person nationality of the document extracted from line 2 of the MRZ code of the TD1 document
-     * @return string
+     * @return object|string
      */
     public function nationality()
     {

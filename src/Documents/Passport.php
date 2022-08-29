@@ -3,8 +3,8 @@
 namespace Rafni\MrtdReader\Documents;
 
 use Rafni\MrtdReader\Contracts\DocumentContract;
-use Rafni\MrtdReader\Policy\CommonUtilities;
-use Rafni\MrtdReader\Policy\Country;
+use Rafni\MrtdReader\Utils\CommonUtilities;
+use Rafni\MrtdReader\Utils\Country;
 use DateTime;
 use Exception;
 
@@ -130,7 +130,7 @@ class Passport extends CommonUtilities implements DocumentContract
      */
 	public function __construct(array $mrzLine)
     {
-        if (count($mrzLine) != 2) {
+        if (count($mrzLine) != count(self::PATTERNS)) {
             throw new Exception('MRZ codes do not comply with the ICAO 9303-1 standard for TD3 documents');
         }
         $this->mrzLines = array_values($mrzLine);
@@ -150,7 +150,7 @@ class Passport extends CommonUtilities implements DocumentContract
      * TD3 document integrity verificator digit verifier
      * @return object
      */
-    public function verify()
+    public function verify() : object
     {
         return (object) [
             'documentNumber' => $this->documentNumberVerificator(),
@@ -165,7 +165,7 @@ class Passport extends CommonUtilities implements DocumentContract
      * Get the processed information available from the TD3 document
      * @return object
      */
-    public function data()
+    public function data() : object
     {
         return (object) array_map(function($value) {
             if (is_string($value)) {
@@ -224,7 +224,7 @@ class Passport extends CommonUtilities implements DocumentContract
 
     /**
      * Obtain the person nationality of the document extracted from line 2 of the MRZ code of the TD3 document
-     * @return string
+     * @return object|string
      */
     public function nationality()
     {
@@ -236,7 +236,7 @@ class Passport extends CommonUtilities implements DocumentContract
      * Obtain the birthday date extracted from line 2 of the MRZ code of the TD3 document
      * @return DateTime
      */
-    public function birthdayDate()
+    public function birthdayDate() : DateTime
     {
         return DateTime::createFromFormat('ymd', $this->birthdayDate);
     }
@@ -254,7 +254,7 @@ class Passport extends CommonUtilities implements DocumentContract
      * Obtain the expiration date of the document extracted from line 2 of the MRZ code of the TD3 document
      * @return DateTime
      */
-    public function expirationDate()
+    public function expirationDate() : DateTime
     {
         return DateTime::createFromFormat('ymd', $this->expirationDate);
     }

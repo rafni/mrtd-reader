@@ -1,6 +1,6 @@
 <?php
 
-namespace Rafni\MrtdReader\Policy;
+namespace Rafni\MrtdReader\Utils;
 
 class Country
 {
@@ -369,25 +369,14 @@ class Country
 	 */
 	public static function search(string $code)
 	{
-		$country = array_filter(self::COUNTRY_CODES, function($country) use ($code) {
-			return (
-				(isset($country['alpha2']) && $country['alpha2'] === $code)
-				|| (isset($country['alpha3']) && $country['alpha3'] === $code)
-				|| (isset($country['numeric']) && $country['numeric'] === $code)
-			);
-		});
-		if (current($country)) {
-			return (object) current($country);
+		if (! is_null($found = self::searchByAlpha2($code))) {
+			return $found;
 		}
-
-		$other = array_filter(self::OTHER_CODES, function($other) use ($code) {
-			return (
-				(isset($other['alpha2']) && $other['alpha2'] === $code)
-				|| (isset($other['alpha3']) && $other['alpha3'] === $code)
-			);
-		});
-		if (current($other)) {
-			return (object) current($other);
+		if (! is_null($found = self::searchByAlpha3($code))) {
+			return $found;
+		}
+		if (! is_null($found = self::searchByNumeric($code))) {
+			return $found;
 		}
 		return null;
 	}
