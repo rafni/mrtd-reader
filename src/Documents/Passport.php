@@ -265,7 +265,7 @@ class Passport extends CommonUtilities implements DocumentContract
      */
     public function personId()
     {
-        return $this->personalNumber;
+        return $this->toPrintData($this->personalNumber);
     }
 
     /**
